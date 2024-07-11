@@ -7,10 +7,14 @@ public class PlayerController : MonoBehaviour
     Animator anim;
     public GameObject player;
     public float speed;
+    bool isJump = false;
+    Rigidbody2D rbody;
+    float newVel, oldVel;
     // Start is called before the first frame update
     void Start()
     {
         anim = GetComponent<Animator>();
+        rbody = GetComponent<Rigidbody2D>();
     }
 
     // Update is called once per frame
@@ -49,6 +53,28 @@ public class PlayerController : MonoBehaviour
         if(Input.GetKeyUp(KeyCode.S))
         {
             anim.SetBool("IsCroush", false);
+        }
+        if(Input.GetButtonDown("Jump") && !isJump)
+        {
+            anim.SetBool("IsJump", true);
+            rbody.AddForce(Vector2.up*250);
+            isJump = true;
+        }
+        if (rbody.velocity.y < -0.01f)
+        {
+            anim.SetBool("IsJump", false);
+            anim.SetBool("IsFall", true);
+        }
+        
+        
+    }
+    private void OnCollisionStay2D(Collision2D collision)
+    {
+        if(collision.gameObject.tag=="Ground")
+        {
+            anim.SetBool("IsJump", false);
+            anim.SetBool("IsFall", false);
+            isJump = false;
         }
     }
 }
